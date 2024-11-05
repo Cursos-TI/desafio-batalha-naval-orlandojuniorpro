@@ -1,160 +1,127 @@
-/* Como Jogar?
-Visualização do Tabuleiro:
-Após iniciar o jogo, o tabuleiro será exibido. As posições são representadas da seguinte forma:
-0: Espaço vazio (não atacado)
-.: Parte do navio (não visível para o jogador)
-X: Acerto (parte do navio atingida)
-O: Erro (posição vazia atingida)
+/* Como Jogar
+Visualização do Tabuleiro: O tabuleiro será exibido no console antes de cada ataque. As posições dos navios são marcadas como N, as casas vazias como ., os acertos como X e os erros como O.
 Fazendo um Ataque:
-O jogador deve inserir as coordenadas para atacar uma posição no tabuleiro.
-As coordenadas devem ser digitadas no formato "linha coluna" (por exemplo, 3 4), onde:
-O primeiro número representa a linha (0 a 9).
-O segundo número representa a coluna (0 a 9).
-Exemplo de Entrada:
-Para atacar a posição na linha 2 e coluna 3, você deve digitar:
+O programa solicitará que você insira as coordenadas do ataque na forma de dois números inteiros: a linha e a coluna.
+As coordenadas devem estar dentro dos limites do tabuleiro, que é uma matriz de 5x5 (0 a 4 para linhas e colunas).
+Por exemplo, para atacar a posição na primeira linha e terceira coluna, você deve digitar:
 
-2 3
+0 2
 
-Resultados do Ataque:
-Após inserir as coordenadas, o jogo informará se você acertou ou errou.
-Se você acertar uma parte do navio, essa posição será marcada como X.
-Se você errar, a posição será marcada como O.
-Repetição de Tentativas:
-O jogo continuará solicitando novas coordenadas até que todas as partes dos navios sejam afundadas.
-Se você tentar atacar uma posição já atacada anteriormente, receberá uma mensagem informando que já atacou essa posição.
-Condições de Vitória:
-O jogo termina quando você acerta todas as partes dos navios (totalizando 10 acertos).
-Uma mensagem de vitória será exibida parabenizando você por afundar todos os navios.
-Dicas para Jogar
-Estratégia: Tente atacar áreas que parecem mais prováveis de conter navios, como grupos de posições adjacentes.
-Registro de Tentativas: Mantenha um registro mental ou em papel das suas tentativas para evitar repetir ataques em posições já atacadas.
-Encerramento
-Após vencer ou decidir encerrar o jogo, você pode fechar a janela do terminal ou pressionar Ctrl+C para interromper a execução.
-Com essas instruções, você deve estar pronto para jogar Batalha Naval! Divirta-se e boa sorte na sua busca por afundar todos os navios!
+Feedback do Ataque:
+Após cada ataque, o programa informará se você acertou um navio (Acertou!), se foi água (Água!) ou se já atacou aquela posição anteriormente (Você já atacou essa posição!).
+Finalizando o Jogo:
+O jogo continua até que todos os segmentos dos navios sejam afundados.
+Quando isso acontecer, uma mensagem de vitória será exibida informando quantas tentativas você levou para afundar todos os navios.
+Dicas
+Tente lembrar quais posições você já atacou para evitar ataques repetidos.
+Use uma estratégia para escolher suas coordenadas de ataque, como atacar áreas adjacentes após um acerto.
+Exemplo de Jogo
+O tabuleiro inicial pode parecer assim:
 
-  */
+Tabuleiro Atual:
+. . . . .
+. N N . .
+. . . . .
+N . . . .
+N . . . .
+
+Você insere as coordenadas:
+
+Digite as coordenadas do ataque (linha coluna): 1 2
+
+Se você acertar um navio, verá:
+
+Acertou!
+
+O tabuleiro será atualizado e exibido novamente.
+Continue atacando até afundar todos os navios!
+Seguindo essas instruções, você poderá jogar Batalha Naval utilizando o código fornecido de forma interativa e divertida! */
+
 
 #include <stdio.h>
+#include <stdbool.h>
 
-#define TAMANHO 10 // Tamanho do tabuleiro
-
-// Função para inicializar o tabuleiro
-void inicializarTabuleiro(int tabuleiro[TAMANHO][TAMANHO]) {
-    for (int i = 0; i < TAMANHO; i++) {
-        for (int j = 0; j < TAMANHO; j++) {
-            tabuleiro[i][j] = 0; // Inicializa todas as posições com 0
-        }
-    }
-}
+#define LINHAS 5
+#define COLUNAS 5
 
 // Função para exibir o tabuleiro
-void exibirTabuleiro(int tabuleiro[TAMANHO][TAMANHO]) {
-    printf("Tabuleiro:\n");
-    for (int i = 0; i < TAMANHO; i++) {
-        for (int j = 0; j < TAMANHO; j++) {
+void exibirTabuleiro(int tabuleiro[LINHAS][COLUNAS]) {
+    printf("\nTabuleiro Atual:\n");
+    for (int i = 0; i < LINHAS; i++) {
+        for (int j = 0; j < COLUNAS; j++) {
             if (tabuleiro[i][j] == 3) {
-                printf(". "); // Não exibe partes do navio
+                printf("N "); // N para navio
             } else if (tabuleiro[i][j] == 1) {
-                printf("X "); // Acerto
+                printf("X "); // X para ataque bem-sucedido
             } else if (tabuleiro[i][j] == -1) {
-                printf("O "); // Erro
+                printf("O "); // O para ataque falho
             } else {
-                printf("0 "); // Espaço vazio
+                printf(". "); // . para casa vazia
             }
         }
         printf("\n");
     }
 }
 
-// Função para posicionar navios
-void posicionarNavios(int tabuleiro[TAMANHO][TAMANHO]) {
-    // Posicionamento dos navios
-    // Navio horizontal
-    int navioHorizontalX = 2;
-    int navioHorizontalY = 3;
-    int tamanhoNavioHorizontal = 3;
-
-    // Navio vertical
-    int navioVerticalX = 5;
-    int navioVerticalY = 6;
-    int tamanhoNavioVertical = 4;
-
-    // Navio diagonal (de cima para baixo)
-    int navioDiagonalX1 = 1;
-    int navioDiagonalY1 = 1;
-    int tamanhoNavioDiagonal1 = 3;
-
-    // Navio diagonal (de baixo para cima)
-    int navioDiagonalX2 = 8;
-    int navioDiagonalY2 = 3;
-    int tamanhoNavioDiagonal2 = 3;
-
-    // Posicionando o navio horizontal
-    for (int i = 0; i < tamanhoNavioHorizontal; i++) {
-        tabuleiro[navioHorizontalX][navioHorizontalY + i] = 3;
-    }
-
-    // Posicionando o navio vertical
-    for (int i = 0; i < tamanhoNavioVertical; i++) {
-        tabuleiro[navioVerticalX + i][navioVerticalY] = 3;
-    }
-
-    // Posicionando o navio diagonal de cima para baixo
-    for (int i = 0; i < tamanhoNavioDiagonal1; i++) {
-        tabuleiro[navioDiagonalX1 + i][navioDiagonalY1 + i] = 3;
-    }
-
-    // Posicionando o navio diagonal de baixo para cima
-    for (int i = 0; i < tamanhoNavioDiagonal2; i++) {
-        tabuleiro[navioDiagonalX2 - i][navioDiagonalY2] = 3;
-    }
-}
-
 // Função principal
 int main() {
-    int tabuleiro[TAMANHO][TAMANHO];
-    
-    inicializarTabuleiro(tabuleiro); // Inicializa o tabuleiro
-    posicionarNavios(tabuleiro);      // Posiciona os navios
+    int tabuleiro[LINHAS][COLUNAS] = {0}; // Inicializa o tabuleiro com zeros
 
+    // Declaração das coordenadas para os navios
+    const int NAVIO_HORIZONTAL_X = 1; // Posição X do navio horizontal
+    const int NAVIO_HORIZONTAL_Y = 2; // Posição Y do navio horizontal
+    const int NAVIO_VERTICAL_X = 3;   // Posição X do navio vertical
+    const int NAVIO_VERTICAL_Y = 1;    // Posição Y do navio vertical
+
+    // Posicionando o navio horizontal (2 partes)
+    for (int i = 0; i < 2; i++) {
+        tabuleiro[NAVIO_HORIZONTAL_X][NAVIO_HORIZONTAL_Y + i] = 3;
+        printf("Parte do navio horizontal posicionado na casa [%d][%d]\n", NAVIO_HORIZONTAL_X, NAVIO_HORIZONTAL_Y + i);
+    }
+
+    // Posicionando o navio vertical (3 partes)
+    for (int i = 0; i < 3; i++) {
+        tabuleiro[NAVIO_VERTICAL_X + i][NAVIO_VERTICAL_Y] = 3;
+        printf("Parte do navio vertical posicionado na casa [%d][%d]\n", NAVIO_VERTICAL_X + i, NAVIO_VERTICAL_Y);
+    }
+
+    // Jogo de Batalha Naval
     int tentativas = 0;
     int acertos = 0;
+    bool jogoAtivo = true;
 
-    while (acertos < 10) { // O jogador precisa acertar todas as partes dos navios
-        exibirTabuleiro(tabuleiro); // Exibe o estado atual do tabuleiro
-        
-        int x, y;
-        printf("Digite as coordenadas para atacar (linha coluna): ");
-        scanf("%d %d", &x, &y);
+    while (jogoAtivo) {
+        int ataqueX, ataqueY;
 
-        // Verifica se as coordenadas estão dentro do tabuleiro
-        if (x < 0 || x >= TAMANHO || y < 0 || y >= TAMANHO) {
+        exibirTabuleiro(tabuleiro); // Exibe o tabuleiro antes do ataque
+
+        // Solicita ao usuário as coordenadas do ataque
+        printf("Digite as coordenadas do ataque (linha coluna): ");
+        scanf("%d %d", &ataqueX, &ataqueY);
+
+        // Verifica se as coordenadas estão dentro dos limites do tabuleiro
+        if (ataqueX < 0 || ataqueX >= LINHAS || ataqueY < 0 || ataqueY >= COLUNAS) {
             printf("Coordenadas inválidas! Tente novamente.\n");
             continue;
         }
 
-        // Verifica se já foi atacado antes
-        if (tabuleiro[x][y] == 1 || tabuleiro[x][y] == -1) {
-            printf("Você já atacou essa posição! Tente novamente.\n");
-            continue;
-        }
-
+        // Processa o ataque
         tentativas++;
-
-        // Verifica se houve acerto ou erro
-        if (tabuleiro[x][y] == 3) { // Parte do navio
+        if (tabuleiro[ataqueX][ataqueY] == 3) { // Acertou um navio
             printf("Acertou!\n");
-            tabuleiro[x][y] = 1; // Marca como acerto
+            tabuleiro[ataqueX][ataqueY] = 1; // Marca como ataque bem-sucedido
             acertos++;
-        } else { // Espaço vazio ou erro
-            printf("Errou!\n");
-            tabuleiro[x][y] = -1; // Marca como erro
+        } else if (tabuleiro[ataqueX][ataqueY] == 0) { // Casa vazia
+            printf("Água!\n");
+            tabuleiro[ataqueX][ataqueY] = -1; // Marca como ataque falho
+        } else {
+            printf("Você já atacou essa posição!\n");
         }
-        
-        printf("Tentativas: %d | Acertos: %d\n", tentativas, acertos);
-        
-        if (acertos == 10) { // Se o jogador acertar todas as partes dos navios
-            printf("Parabéns! Você afundou todos os navios!\n");
+
+        // Verifica se todos os navios foram afundados
+        if (acertos == 5) { // Total de partes dos navios: 2 + 3 = 5
+            jogoAtivo = false;
+            printf("Parabéns! Você afundou todos os navios em %d tentativas!\n", tentativas);
         }
     }
 
